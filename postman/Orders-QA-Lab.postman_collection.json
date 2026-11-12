@@ -1,0 +1,10 @@
+{
+  "info":{"name":"Orders QA Lab","description":"Local API practice: positive and negative endpoint checks","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},
+  "item":[
+    {"name":"Health","request":{"method":"GET","url":"{{baseUrl}}/health"},"event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('200 OK', () => pm.response.to.have.status(200));","pm.test('Service is healthy', () => pm.expect(pm.response.json().status).to.eql('ok'));"]}}]},
+    {"name":"Create order","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"customer\":\"Asha Rao\",\"sku\":\"MOUSE-01\",\"quantity\":2}"},"url":"{{baseUrl}}/orders"},"event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Created', () => pm.response.to.have.status(201));","pm.test('Correct total', () => pm.expect(pm.response.json().total).to.eql(1598));","pm.environment.set('orderId', pm.response.json().id);"]}}]},
+    {"name":"Read created order","request":{"method":"GET","url":"{{baseUrl}}/orders/{{orderId}}"},"event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('OK', () => pm.response.to.have.status(200));","pm.test('Read created order', () => pm.expect(pm.response.json().id).to.eql(Number(pm.environment.get('orderId'))));"]}}]},
+    {"name":"Invalid quantity","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\"customer\":\"Asha Rao\",\"sku\":\"MOUSE-01\",\"quantity\":0}"},"url":"{{baseUrl}}/orders"},"event":[{"listen":"test","script":{"type":"text/javascript","exec":["pm.test('Validation error', () => pm.response.to.have.status(422));"]}}]}
+  ],
+  "variable":[{"key":"baseUrl","value":"http://127.0.0.1:8000"}]
+}
